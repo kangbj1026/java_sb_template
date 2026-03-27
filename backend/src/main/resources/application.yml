@@ -1,0 +1,30 @@
+server: # 웹 서버 구동 관련 인프라 설정 블록
+  port: 1026 # 서비스 수신 포트 번호 지정
+  servlet: # 서블릿 컨테이너 환경 구성
+    application-display-name: ${DB_CONFIG.DATABASE} # 애플리케이션 식별자 및 표시 명칭 설정 (환경 변수 참조)
+
+spring: # Spring 프레임워크 전역 인프라 구성
+  main: # 애플리케이션 메인 구동 설정
+    banner-mode: "off" # 기동 시 경로 정보 노출 방지를 위한 배너 출력 비활성화
+  datasource: # 데이터베이스 연결 및 커넥션 풀 상세 설정
+    port: ${DB_CONFIG.PORT} # DB 접속 포트 정보 (외부 설정 참조)
+    url: ${DB_CONFIG.URL} # 데이터베이스 접속을 위한 JDBC 엔드포인트 URL
+    username: ${DB_CONFIG.USERNAME} # 데이터베이스 접근 계정 식별자
+    password: ${DB_CONFIG.PASSWORD} # 데이터베이스 접근 인증 암호
+  jpa: # Java Persistence API 환경 구성
+    hibernate: # Hibernate ORM 세부 동작 정의
+      ddl-auto: update # 엔티티 변경 사항에 따른 데이터베이스 스키마 자동 갱신 정책
+    show-sql: true # 실행되는 SQL 쿼리의 콘솔 출력 활성화
+
+jasypt: # 민감 데이터 암호화를 위한 Jasypt 라이브러리 설정
+  encryptor: # 암호화 엔진 및 빈 관련 속성 정의
+    bean: jasyptEncryptorAES # 암호화 로직을 수행할 스프링 관리 빈(Bean) 이름 지정
+
+logging: # 시스템 로그 기록 및 레벨 제어 블록
+  level: # 로거별 출력 임계치 설정
+    root: INFO # 애플리케이션 전역 기본 로그 레벨 지정
+    com.zaxxer.hikari: INFO # 커넥션 풀 상세 설정 및 계정 정보 노출 방지를 위한 레벨 상향
+    org.hibernate.orm.connections.pooling: WARN # DB 메타데이터 및 인프라 정보 출력 억제
+    org.hibernate.SQL: INFO # 실행 SQL 로그 출력 레벨 제어
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE # SQL 파라미터 바인딩 상세 로그 활성화
+    com.github.ulisesbocchio: WARN # Jasypt 로드 과정의 설정 파일 구조 노출 차단

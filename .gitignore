@@ -38,3 +38,6 @@ out/
 
 ### file ###
 file/
+
+### env ###
+env.yml
