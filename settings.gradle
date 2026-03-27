@@ -1,1 +1,4 @@
-rootProject.name = 'java_sb_template'
+rootProject.name = 'java_sb_template' // 프로젝트의 논리적 루트 식별자 정의
+
+include 'backend' // 백엔드 로직을 담당하는 서브 모듈을 빌드 시스템에 포함
+include 'frontend' // 프론트엔드 환경을 구축할 서브 모듈을 빌드 시스템에 포함

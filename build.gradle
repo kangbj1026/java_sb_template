@@ -1,29 +1,22 @@
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.4'
-    id 'io.spring.dependency-management' version '1.1.7'
-}
+/* 
+ * [루트 프로젝트 빌드 설정 파일]
+ * 본 파일은 멀티 모듈 프로젝트의 최상위 계층으로서 하위 모듈(backend, frontend)의 공통 설정을 중앙 집중식으로 관리함.
+ * 각 모듈에서 반복적으로 선언되는 그룹명, 버전 정보 및 저장소 설정을 일괄 적용하여 빌드 일관성을 보장하고 중복 코드를 제거하는 역할 수행함.
+ */
 
-group = 'org.example'
-version = '0.0.1-SNAPSHOT'
-description = 'java_sb_template'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+buildscript { // 프로젝트 전체 빌드 프로세스에 필요한 외부 인프라스트럭처 설정 블록
+    repositories { // 빌드 스크립트 엔진이 의존 라이브러리를 탐색할 저장소 정의
+        mavenCentral() // 글로벌 표준 Maven 중앙 저장소 활용을 통한 안정적인 라이브러리 공급
     }
 }
 
-repositories {
-    mavenCentral()
+allprojects { // 루트 프로젝트를 포함한 모든 서브 모듈에 전역적으로 적용되는 공통 구성 요소
+    group = 'org.example' // 전체 아티팩트의 논리적 그룹 식별자 통합 관리
+    version = '0.0.1-SNAPSHOT' // 프로젝트 전반의 릴리즈 상태 및 형상 버전 동기화
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+subprojects { // 하위 모듈(backend, frontend)에만 한정하여 적용되는 개별 구성 블록
+    repositories { // 각 서브 모듈의 비즈니스 로직 구현에 필요한 라이브러리 탐색 범위 확정
+        mavenCentral() // 검증된 라이브러리 확보를 위한 표준 원격 저장소 구성
+    }
 }

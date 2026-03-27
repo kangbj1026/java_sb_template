@@ -1,0 +1,31 @@
+plugins { // 프로젝트의 핵심 기능 확장을 위한 플러그인 구성 블록
+    id 'java' // 표준 Java 개발 환경 및 빌드 파이프라인 구성 활성화
+    id 'org.springframework.boot' version '4.0.4' // Spring Boot 기반 애플리케이션 빌드 및 실행 아카이브 관리
+    id 'io.spring.dependency-management' version '1.1.7' // Spring Boot 권장 버전에 따른 의존성 관리 최적화 수행
+} // 플러그인 설정 블록 종료
+
+group = 'org.example' // 아티팩트 식별을 위한 고유 그룹 패키지 경로 설정
+version = '0.0.1-SNAPSHOT' // 애플리케이션 배포 및 형상 관리를 위한 프로젝트 버전 정의
+description = 'java_sb_template' // 시스템의 목적과 성격을 요약한 프로젝트 설명
+
+java { // Java 툴체인 및 컴파일 환경 세부 설정
+    toolchain { // 빌드 시 사용할 JDK 기술 사양 정의
+        languageVersion = JavaLanguageVersion.of(17) // 안정적인 운영을 위한 Java 17 LTS 버전 기반의 런타임 확정
+    } // 툴체인 설정 종료
+} // Java 구성 블록 종료
+
+repositories { // 외부 라이브러리 조회를 위한 원격 저장소 설정
+    mavenCentral() // 글로벌 표준 Maven Central 저장소로부터 의존성 라이브러리 공급
+} // 저장소 설정 종료
+
+dependencies { // 비즈니스 로직 구현 및 테스트에 필요한 외부 라이브러리 선언
+    implementation 'org.springframework.boot:spring-boot-starter' // 핵심 프레임워크 인프라 및 자동 설정 지원 라이브러리 포함
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit5, Mockito 등 고품질 테스트 코드를 위한 검증 도구 제공
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // 테스트 실행을 지원하는 JUnit Platform 런처 구성
+
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring MVC 기반의 RESTful API 및 웹 서비스 환경 활성화
+} // 의존성 정의 블록 종료
+
+tasks.named('test') { // 테스트 태스크 실행 시 세부 동작 정의
+    useJUnitPlatform() // JUnit 5 표준 플랫폼을 활용한 테스트 자동화 환경 구성
+} // 테스트 태스크 설정 완료
