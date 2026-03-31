@@ -30,6 +30,8 @@ springdoc: # API 문서 자동화 도구(Swagger) 상세 설정
     path: /api-docs # 명세서 데이터 제공 경로
 
 logging: # 시스템 로그 기록 및 레벨 제어 블록
+  file:
+    path: backend/logs # 로그 파일이 저장될 상대 경로를 backend 디렉토리 하위로 지정
   level: # 로거별 출력 임계치 설정
     root: INFO # 애플리케이션 전역 기본 로그 레벨 지정
     com.zaxxer.hikari: INFO # 커넥션 풀 상세 설정 및 계정 정보 노출 방지를 위한 레벨 상향

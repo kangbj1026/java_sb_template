@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 
+        [서버 환경별 실행 가이드]
+        1. Linux/Unix: java -jar app.jar - -logging.file.path=/home/ubuntu/app/logs
+        2. Windows: java -jar app.jar - -logging.file.path=C:\app\logs
+        3. Docker/Container: 환경변수(-e LOGGING_FILE_PATH=/app/logs)를 통해 주입 권장
+        4. Local(IDE): 기본값 backend/logs 또는 application.yml 설정을 따름
+    -->
+    <!-- application.yml의 logging.file.path 설정을 참조하며, 미정의 시 logs를 기본값으로 사용 -->
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="logs"/>
+    
+    <!-- 로그 폴더 구조 생성을 위한 현재 날짜 변수 정의 (yyyy-MM-dd 포맷) -->
+    <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+
+    <!-- 표준 출력을 위한 콘솔 어펜더 구성 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 로그 출력 패턴: 날짜, 스레드, 로그 레벨, 로거명, 메시지 순 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 조건에 따라 로그 파일을 동적으로 분리하여 저장하는 SiftingAppender 구성 -->
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <!-- MDC(Mapped Diagnostic Context) 기반의 식별자 정의 -->
+        <discriminator>
+            <key>logType</key> <!-- 로그 유형 식별 키 (access, errors 등) -->
+            <defaultValue>system</defaultValue> <!-- MDC 값이 없을 경우 기본 분류명 -->
+        </discriminator>
+        <discriminator>
+            <key>method</key> <!-- HTTP 메서드 식별 키 (GET, POST 등) -->
+            <defaultValue>none</defaultValue> <!-- MDC 값이 없을 경우 기본 분류명 -->
+        </discriminator>
+
+        <sift>
+            <!-- 동적으로 생성되는 개별 파일 저장 어펜더 정의 -->
+            <appender name="FILE-${logType}-${method}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <!-- 최종 로그 파일 경로 및 명칭: logs/날짜/유형/메서드/api.log 구조 -->
+                <file>${LOG_PATH}/${BY_DATE}/${logType}/${method}/api.log</file>
+                
+                <!-- 파일 크기 및 시간 기반의 롤링/압축 정책 설정 -->
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <!-- 보관 주기 만료 시 압축 파일 생성 패턴 정의 -->
+                    <fileNamePattern>${LOG_PATH}/${BY_DATE}/${logType}/${method}/api.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                    <!-- 개별 로그 파일의 최대 가용 용량 (10MB 초과 시 롤링) -->
+                    <maxFileSize>10MB</maxFileSize>
+                    <!-- 로그 데이터 보관 기간 (최대 30일) -->
+                    <maxHistory>30</maxHistory>
+                    <!-- 전체 로그 저장소 허용 총 임계 용량 (2GB 초과 시 오래된 파일부터 삭제) -->
+                    <totalSizeCap>2GB</totalSizeCap>
+                </rollingPolicy>
+                
+                <encoder>
+                    <!-- 파일 기록 로그 출력 패턴 정의 -->
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <!-- 전역 로그 레벨 설정 및 활성화할 어펜더 연결 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" /> <!-- 콘솔 출력 활성화 -->
+        <appender-ref ref="SIFT" />    <!-- 파일 동적 분리 저장 활성화 -->
+    </root>
+</configuration>

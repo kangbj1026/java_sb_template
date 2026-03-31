@@ -42,8 +42,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Swagger UI 및 API 문서 관련 경로는 인증 없이 허용
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/favicon.ico").permitAll()
-                // 공개 API (예: 로그인, 회원가입) 허용 설정 (필요 시 추가)
-                .requestMatchers("/api/auth/**").permitAll()
+                // 테스트 및 공개 API (예: 로그인, 회원가입) 허용 설정 (필요 시 추가)
+                .requestMatchers("/api/test/**", "/api/auth/**").permitAll()
                 // 그 외 모든 요청은 인증 필요
                 .anyRequest().authenticated()
             )
